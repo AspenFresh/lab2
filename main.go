@@ -1,65 +1,97 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
+// ????????? ??? ???????????? ??????
+const defaultPassword = "changeme"
 
+// ????????? ???? ???????????
 type Role struct {
-    Name        string   
-    Permissions []string 
+	Name        string
+	Permissions []string
 }
 
-
+// ????????? ???????????
 type User struct {
-    ID       int
-    Name     string
-    Email    string
-    Password string
-    Role     Role
+	ID       int
+	Name     string
+	Email    string
+	Password string
+	Role     Role
 }
 
+// ????????? ??????? ??????????? ?? ??????? ?????
 func (u User) HasAccess(permission string) bool {
-    for _, p := range u.Role.Permissions {
-        if p == permission {
-            return true
-        }
-    }
-    return false
+	for _, p := range u.Role.Permissions {
+		if p == permission {
+			return true
+		}
+	}
+	return false
 }
 
+// ????? ????? ??????????? (??????? ?????? ? ????????????)
+func changeName(u *User, newName string) {
+	u.Name = newName
+	fmt.Println("Name changed successfully")
+}
 
 func main() {
-    
-    adminRole := Role{
-        Name:        "Admin",
-        Permissions: []string{"create", "read", "update", "delete"},
-    }
+	defer fmt.Println("Program finished") // ??????????? ? ?????
 
-    userRole := Role{
-        Name:        "User",
-        Permissions: []string{"read"},
-    }
+	// ???????? ????? ??? ?????
+	permissionsMap := map[string][]string{
+		"Admin": {"create", "read", "update", "delete"},
+		"User":  {"read"},
+	}
 
- 
-    admin := User{
-        ID:       1,
-        Name:     "Maryna",
-        Email:    "maryna@example.com",
-        Password: "123456",
-        Role:     adminRole,
-    }
+	// ?????????? ????
+	roleName := "Admin"
+	switch roleName {
+	case "Admin":
+		fmt.Println("Role is Admin")
+	case "User":
+		fmt.Println("Role is User")
+	default:
+		fmt.Println("Unknown role")
+	}
 
-    user := User{
-        ID:       2,
-        Name:     "Ivan",
-        Email:    "ivan@example.com",
-        Password: "qwerty",
-        Role:     userRole,
-    }
+	// ????????? ?????
+	adminRole := Role{
+		Name:        "Admin",
+		Permissions: permissionsMap["Admin"],
+	}
 
-   
-    fmt.Printf("Can user %s create? %v\n", admin.Name, admin.HasAccess("create"))
-    fmt.Printf("Can user %s delete? %v\n", user.Name, user.HasAccess("delete"))
-    fmt.Printf("Can user %s read? %v\n", user.Name, user.HasAccess("read"))
+	userRole := Role{
+		Name:        "User",
+		Permissions: permissionsMap["User"],
+	}
+
+	// ????????? ????????????
+	admin := User{
+		ID:       1,
+		Name:     "Maryna",
+		Email:    "maryna@example.com",
+		Password: defaultPassword,
+		Role:     adminRole,
+	}
+
+	user := User{
+		ID:       2,
+		Name:     "Ivan",
+		Email:    "ivan@example.com",
+		Password: defaultPassword,
+		Role:     userRole,
+	}
+
+	// ????????? ????????
+	fmt.Printf("Can user %s create? %v\n", admin.Name, admin.HasAccess("create"))
+	fmt.Printf("Can user %s delete? %v\n", user.Name, user.HasAccess("delete"))
+	fmt.Printf("Can user %s read? %v\n", user.Name, user.HasAccess("read"))
+
+	// ????? ????? ???????????
+	changeName(&user, "Ivan Updated")
+	fmt.Printf("New user name: %s\n", user.Name)
 }
